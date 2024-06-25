@@ -18,9 +18,9 @@ const DrawingList = ({ drawings, onLoad, onDelete }) => {
             />
             <ul>
                 {filteredDrawings.map(drawing => (
-                    <li key={drawing._id} onClick={() => onLoad(drawing._id)} style={{ cursor: 'pointer' }}>
+                    <li key={drawing._id} onClick={() => onLoad(drawing._id)} onTouchStart={() => onLoad(drawing._id)} style={{ cursor: 'pointer' }}>
                         {drawing.name} (ID: {drawing._id})
-                        <button onClick={(e) => { e.stopPropagation(); onDelete(drawing._id); }}>Delete</button>
+                        <button onClick={(e) => { e.stopPropagation(); onDelete(drawing._id); }} onTouchStart={(e) => { e.stopPropagation(); onDelete(drawing._id); }}>Delete</button>
                     </li>
                 ))}
             </ul>

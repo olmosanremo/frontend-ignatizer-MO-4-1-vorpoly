@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import MinimalDrawingCanvas from './components/MinimalDrawingCanvas';
 import ControlPanel from './components/ControlPanel';
@@ -132,9 +131,9 @@ const App = () => {
         Object.keys(lines).forEach(color => {
             lines[color].forEach((line, lineIndex) => {
                 line.points.forEach((point, index, arr) => {
-                    let time = (point.x / canvasRef.current.width) * totalTime;
-                    const freq = 100 + (canvasRef.current.height - point.y);
-                    const nextTime = (index < arr.length - 1) ? (arr[index + 1].x / canvasRef.current.width) * totalTime : time + 0.5;
+                    let time = point.x * totalTime;
+                    const freq = 100 + (1 - point.y) * canvasRef.current.height;
+                    const nextTime = (index < arr.length - 1) ? arr[index + 1].x * totalTime : time + 0.5;
                     const duration = Math.max(nextTime - time, minDuration);
 
                     const synth = synths[color];
@@ -176,34 +175,39 @@ const App = () => {
         setIsPlaying(false);
     };
 
+    const handleUserInteraction = async () => {
+        await Tone.start();
+        console.log("AudioContext started");
+    };
+
     useEffect(() => {
         handleFetchDrawings();
     }, []);
 
     return (
-        <div>
+        <div onClick={handleUserInteraction} onTouchStart={handleUserInteraction}>
             {showSplash && <SplashScreen />}
             {!showSplash && (
                 <>
                     <div className="control-head">
-                    <button onClick={() => setIsDrawingListVisible(true)}>Logo Button</button>
-                    {isDrawingListVisible && (
-                        <div className="modal">
-                            <div className="modal-content">
-                                <DrawingList
-                                    drawings={drawings}
-                                    onLoad={handleLoad}
-                                    onDelete={handleDelete}
-                                />
-                                <button onClick={() => setIsDrawingListVisible(false)}>Close</button>
+                        <button onClick={() => setIsDrawingListVisible(true)}>Logo Button</button>
+                        {isDrawingListVisible && (
+                            <div className="modal">
+                                <div className="modal-content">
+                                    <DrawingList
+                                        drawings={drawings}
+                                        onLoad={handleLoad}
+                                        onDelete={handleDelete}
+                                    />
+                                    <button onClick={() => setIsDrawingListVisible(false)}>Close</button>
+                                </div>
                             </div>
-                        </div>
-                    )}
-                    <SoundControls
-                        isPlaying={isPlaying}
-                        playPauseSound={playPauseSound}
-                        stopSound={stopSound}
-                    />
+                        )}
+                        <SoundControls
+                            isPlaying={isPlaying}
+                            playPauseSound={playPauseSound}
+                            stopSound={stopSound}
+                        />
                     </div>
                     <ControlPanel setColor={setColor} toggleEraseMode={toggleEraseMode} isErasing={isErasing} />
                     <input className="name-input-field"
